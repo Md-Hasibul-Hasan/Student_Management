@@ -1,5 +1,11 @@
-import { redirect } from "next/navigation";
+import React from 'react';
 
-export default function Page() {
-  redirect("/Student");
-}
+const page = () => {
+  return (
+    <div>
+      <h1>Home Page</h1>
+    </div>
+  );
+};
+
+export default page;
