@@ -75,3 +75,6 @@ Start Command = gunicorn config.wsgi:application
 
 Root Directory = Frontend
 Framework = Next.js
+
+
+DB: Officalgmail
