@@ -1,0 +1,77 @@
+src/
+│
+├── app/
+│   ├── globals.css
+│   ├── layout.js
+│   │
+│   ├── (dashboard)/
+│   │   ├── layout.js
+│   │   ├── page.js
+│   │   │
+│   │   ├── dashboard/
+│   │   ├── products/
+│   │   ├── categories/
+│   │   ├── brands/
+│   │   ├── units/
+│   │   ├── orders/
+│   │   ├── customers/
+│   │   ├── coupons/
+│   │   ├── promotions/
+│   │   ├── reports/
+│   │   └── roles/
+│   │
+│   └── (auth)/
+│       ├── login/
+│       └── register/
+│
+├── components/
+│   │
+│   ├── layout/
+│   │   ├── DashboardLayout.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Sidebar.jsx
+│   │   ├── SidebarMenu.jsx
+│   │   ├── SidebarFooter.jsx
+│   │   ├── MobileSidebar.jsx
+│   │   └── UserDropdown.jsx
+│   │
+│   ├── common/
+│   │   ├── Logo.jsx
+│   │   ├── Breadcrumb.jsx
+│   │   ├── EmptyState.jsx
+│   │   └── PageHeader.jsx
+│   │
+│   └── ui/
+│       ├── Button.jsx
+│       ├── Card.jsx
+│       ├── Input.jsx
+│       ├── Badge.jsx
+│       └── Modal.jsx
+│
+├── config/
+│   ├── sidebar.js
+│   └── theme.js
+│
+├── context/
+│   └── SidebarContext.jsx
+│
+├── hooks/
+│   ├── useSidebar.js
+│   └── useMediaQuery.js
+│
+├── lib/
+│   ├── cn.js
+│   └── constants.js
+│
+└── styles/
+    ├── dashboard.css
+    ├── sidebar.css
+    └── navbar.css
+
+
+Root Directory = Backend
+Build Command = ./build.sh
+Start Command = gunicorn config.wsgi:application
+
+Root Directory = Frontend
+Framework = Next.js
