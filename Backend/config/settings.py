@@ -24,23 +24,25 @@ DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS',default=['localhost', '127.0.0.1'])
 
-CORS_ALLOWED_ORIGINS = env.list(
-    'CORS_ALLOWED_ORIGINS',
-    default=[
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-    ]
-)
+# CORS_ALLOWED_ORIGINS = env.list(
+#     'CORS_ALLOWED_ORIGINS',
+#     default=[
+#         'http://localhost:3000',
+#         'http://127.0.0.1:3000',
+#     ]
+# )
 
-CSRF_TRUSTED_ORIGINS = env.list(
-    'CSRF_TRUSTED_ORIGINS',
-    default=[
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-    ]
-)
+# CSRF_TRUSTED_ORIGINS = env.list(
+#     'CSRF_TRUSTED_ORIGINS',
+#     default=[
+#         'http://localhost:3000',
+#         'http://127.0.0.1:3000',
+#     ]
+# )
 
-
+CORS_ALLOWED_ORIGINS = ['https://student-management-five-green.vercel.app','https://student-management-kht8wjyij.vercel.app']
+CSRF_TRUSTED_ORIGINS= ['https://student-management-five-green.vercel.app','https://student-management-kht8wjyij.vercel.app']
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
@@ -77,8 +79,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', #whitenoise
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware', # CORS
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
