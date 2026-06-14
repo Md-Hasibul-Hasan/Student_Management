@@ -91,7 +91,8 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Link from "next/link"; // <-- এটি ইমপোর্ট করুন
+import Link from "next/link";
+import { useSidebar } from "@/components/ui/sidebar"
 
 import {
   Collapsible,
@@ -109,9 +110,11 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { ChevronRightIcon } from "lucide-react"
+import { Button } from "./ui/button";
 
 export function NavCombo({ data }) {
   const pathname = usePathname();
+  const { state, toggleSidebar } = useSidebar();
   const [openItems, setOpenItems] = useState({});
 
   useEffect(() => {
@@ -158,7 +161,12 @@ export function NavCombo({ data }) {
               className="group/collapsible"
             >
               <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
+                <CollapsibleTrigger asChild onClick={(e) => {
+                  if (state === "collapsed") {
+                    e.preventDefault();
+                    toggleSidebar();
+                  }
+                }}>
                   <SidebarMenuButton tooltip={item.title}>
                     {item.icon}
                     <span>{item.title}</span>
@@ -173,9 +181,9 @@ export function NavCombo({ data }) {
                     {item.items.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton asChild isActive={subItem.url === pathname}>
-                          {/* <a> ট্যাগের বদলে <Link> ব্যবহার করা হলো */}
                           <Link href={subItem.url} className="flex gap-3 px-3" >
-                            {subItem.icon}
+                            {/* {subItem.icon} */}
+                            <Button variant="link" size="sm" className="px-0">{subItem.icon}</Button>
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>

@@ -2,10 +2,8 @@
 
 import * as React from "react"
 
-import { NavSingle } from "@/components/nav-single"
 import { NavUser } from "@/components/nav-user"
 import { NavCombo } from "@/components/nav-combo"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +34,7 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
+        <NavCombo data={combo} />
         <NavCombo data={combo} />
         {/* <NavSingle data={single} /> */}
       </SidebarContent>

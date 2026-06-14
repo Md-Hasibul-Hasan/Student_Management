@@ -318,10 +318,10 @@ export default function Page() {
 
             {/* ── Pagination ── */}
             {totalPages && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-border">
-                <span className="text-sm text-muted-foreground">
+              <div className="flex flex-col md:flex-row items-center justify-between px-6 py-4 border-t border-border">
+                <div className="text-sm text-muted-foreground">
                   Page {page} of {totalPages}
-                </span>
+                </div>
                 {/* Records per page */}
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm text-muted-foreground whitespace-nowrap">
