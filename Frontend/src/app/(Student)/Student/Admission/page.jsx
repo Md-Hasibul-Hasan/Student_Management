@@ -75,6 +75,14 @@ export default function AdmissionPage() {
     );
   };
 
+  /* ──────────── Filtered sections & subjects based on selected class ──────────── */
+  const filteredSections = sections.filter(
+    (sec) => !form.school_class || sec.school_class === Number(form.school_class)
+  );
+  const filteredSubjects = subjects.filter(
+    (sub) => !form.school_class || sub.school_class === Number(form.school_class)
+  );
+
   /* ──────────── Load initial data ──────────── */
   useEffect(() => {
     dispatch(fetchClasses({ records: 9999 }));
@@ -467,11 +475,14 @@ export default function AdmissionPage() {
                       className={selectClass}
                     >
                       <option value="">Select section</option>
-                      {sections.map((sec) => (
+                      {filteredSections.map((sec) => (
                         <option key={sec.id} value={sec.id}>
                           {sec.name}
                         </option>
                       ))}
+                      {filteredSections.length === 0 && form.school_class && (
+                        <option value="" disabled>No sections for this class</option>
+                      )}
                     </select>
                   </div>
 
@@ -566,7 +577,7 @@ export default function AdmissionPage() {
                   <>
                     {/* Available subjects */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-                      {subjects.map((sub) => {
+                      {filteredSubjects.map((sub) => {
                         const isSaved = savedSubjectIds.includes(sub.id);
                         const isSelected = selectedSubjects.includes(sub.id);
 
@@ -604,7 +615,7 @@ export default function AdmissionPage() {
                                   />
                                 )}
                               </div>
-                              <span className={`font-medium ${isSaved ? "text-muted-foreground line-through" : ""}`}>
+                              <span className={`font-medium ${isSaved ? "text-muted-foreground " : ""}`}>
                                 {sub.name}
                                 {isSaved && (
                                   <span className="ml-1.5 text-[10px] text-green-600 dark:text-green-400 font-normal not-italic">

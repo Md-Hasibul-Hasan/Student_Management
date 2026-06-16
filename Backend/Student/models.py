@@ -18,19 +18,37 @@ class Class(models.Model):
 
 class Section(models.Model):
     name = models.CharField(max_length=255)
+    school_class = models.ForeignKey(
+        Class,
+        on_delete=models.CASCADE,
+        related_name="sections",
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        if self.school_class:
+            return f"{self.name} ({self.school_class.name})"
         return self.name
 
 
 class Subject(models.Model):
     name = models.CharField(max_length=255)
+    school_class = models.ForeignKey(
+        Class,
+        on_delete=models.CASCADE,
+        related_name="subjects",
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        if self.school_class:
+            return f"{self.name} ({self.school_class.name})"
         return self.name
 
 

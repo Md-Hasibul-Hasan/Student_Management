@@ -98,12 +98,12 @@ export const fetchSections = createAsyncThunk(
 
 export const createSection = createAsyncThunk(
   "student/createSection",
-  async ({ name }, { rejectWithValue }) => {
+  async ({ name, school_class }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${url}/api/students/sections/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, school_class }),
       });
       return await response.json();
     } catch (error) {
@@ -114,12 +114,12 @@ export const createSection = createAsyncThunk(
 
 export const updateSection = createAsyncThunk(
   "student/updateSection",
-  async ({ id, name }, { rejectWithValue }) => {
+  async ({ id, name, school_class }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${url}/api/students/sections/${id}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, school_class }),
       });
       return await response.json();
     } catch (error) {
@@ -169,12 +169,12 @@ export const fetchSubjects = createAsyncThunk(
 
 export const createSubject = createAsyncThunk(
   "student/createSubject",
-  async ({ name }, { rejectWithValue }) => {
+  async ({ name, school_class }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${url}/api/students/subjects/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, school_class }),
       });
       return await response.json();
     } catch (error) {
@@ -185,12 +185,12 @@ export const createSubject = createAsyncThunk(
 
 export const updateSubject = createAsyncThunk(
   "student/updateSubject",
-  async ({ id, name }, { rejectWithValue }) => {
+  async ({ id, name, school_class }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${url}/api/students/subjects/${id}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, school_class }),
       });
       return await response.json();
     } catch (error) {

@@ -14,15 +14,25 @@ class ClassSerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
+    class_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Section
         fields = '__all__'
 
+    def get_class_name(self, obj):
+        return obj.school_class.name if obj.school_class else ''
+
 
 class SubjectSerializer(serializers.ModelSerializer):
+    class_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Subject
         fields = '__all__'
+
+    def get_class_name(self, obj):
+        return obj.school_class.name if obj.school_class else ''
 
 
 # ──────────────── Student Info Serializers ────────────────

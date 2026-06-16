@@ -24,7 +24,7 @@ class ClassViewSet(ModelViewSet):
     serializer_class = ClassSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name']
+    filterset_fields = ['name',]
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -37,7 +37,7 @@ class SectionViewSet(ModelViewSet):
     serializer_class = SectionSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name']
+    filterset_fields = ['name', 'school_class']
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -50,7 +50,7 @@ class SubjectViewSet(ModelViewSet):
     serializer_class = SubjectSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name']
+    filterset_fields = ['name', 'school_class']
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']

@@ -7,6 +7,7 @@ import {
   createSubject,
   updateSubject,
   deleteSubject,
+  fetchClasses,
 } from "@/features/student/StudentThunk";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import DataTableToolbar from "@/components/table/DataTableToolbar";
@@ -17,9 +18,11 @@ export default function Page() {
   const { data: subjects, count, totalPages, loading } = useSelector(
     (state) => state.student.subjects
   );
+  const { data: classes } = useSelector((s) => s.student.classes);
 
   /* CRUD form */
   const [subjectName, setSubjectName] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -29,6 +32,11 @@ export default function Page() {
   const [ordering, setOrdering] = useState("-created_at");
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState(5);
+
+  /* ──────────────── Load classes ────────────── */
+  useEffect(() => {
+    dispatch(fetchClasses({ records: 9999 }));
+  }, [dispatch]);
 
   /* ──────────────── Fetch via Redux ────────────── */
   const loadSubjects = useCallback(() => {
@@ -42,11 +50,9 @@ export default function Page() {
   }, [loadSubjects]);
 
   /* Reset to page 1 when any filter/search/ordering changes */
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setPage(1);
   }, [search, filterName, ordering, records]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   /* ──────────────── CRUD ────────────────────────── */
   const handleSubmit = async (e) => {
@@ -56,11 +62,19 @@ export default function Page() {
     setSaving(true);
     try {
       if (editingId) {
-        await dispatch(updateSubject({ id: editingId, name: subjectName })).unwrap();
+        await dispatch(updateSubject({
+          id: editingId,
+          name: subjectName,
+          school_class: selectedClass ? Number(selectedClass) : null,
+        })).unwrap();
       } else {
-        await dispatch(createSubject({ name: subjectName })).unwrap();
+        await dispatch(createSubject({
+          name: subjectName,
+          school_class: selectedClass ? Number(selectedClass) : null,
+        })).unwrap();
       }
       setSubjectName("");
+      setSelectedClass("");
       setEditingId(null);
       loadSubjects();
     } catch (error) {
@@ -73,6 +87,7 @@ export default function Page() {
   const handleEdit = (item) => {
     setEditingId(item.id);
     setSubjectName(item.name);
+    setSelectedClass(item.school_class?.toString() || "");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -89,13 +104,14 @@ export default function Page() {
   const handleCancel = () => {
     setEditingId(null);
     setSubjectName("");
+    setSelectedClass("");
   };
 
   /* ──────────────── Reusable input classes ───────── */
   const inputClass =
     "w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring";
   const selectClass =
-    "px-3 py-2 rounded-lg border border-border bg-background text-muted-foreground text-sm focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring";
+    "w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring";
 
   /* ──────────────── Render ─────────────────────── */
   return (
@@ -106,7 +122,7 @@ export default function Page() {
           Subject Management
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Create, update and manage subjects.
+          Create, update and manage subjects. Each subject must belong to a class.
         </p>
       </div>
 
@@ -119,7 +135,7 @@ export default function Page() {
                 {editingId ? "Update Subject" : "Add Subject"}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {editingId ? "Modify selected subject." : "Create a new subject."}
+                {editingId ? "Modify selected subject." : "Create a new subject for a class."}
               </p>
             </div>
 
@@ -135,6 +151,23 @@ export default function Page() {
                   placeholder="Enter subject name"
                   className={inputClass}
                 />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-foreground">
+                  Class *
+                </label>
+                <select
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                  className={selectClass}
+                  required
+                >
+                  <option value="">Select a class</option>
+                  {classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>{cls.name}</option>
+                  ))}
+                </select>
               </div>
 
               <button
@@ -170,22 +203,17 @@ export default function Page() {
               setFilterValue={setFilterName}
               ordering={ordering}
               setOrdering={setOrdering}
-              searchPlaceholder="Search sections..."
+              searchPlaceholder="Search subjects..."
               filterPlaceholder="Filter name..."
               count={count}
               countLabel="Subjects"
             />
-
-
 
             {/* Table header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">
                 Subject List
               </h2>
-              {/* <span className="text-sm text-muted-foreground">
-                {count} Subject{count !== 1 ? "s" : ""}
-              </span> */}
             </div>
 
             {/* ── Table body ── */}
@@ -215,6 +243,9 @@ export default function Page() {
                       <th className="px-6 py-4 text-left text-sm font-semibold text-muted-foreground">
                         Subject Name
                       </th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-muted-foreground">
+                        Class
+                      </th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-muted-foreground">
                         Actions
                       </th>
@@ -231,6 +262,11 @@ export default function Page() {
                         </td>
                         <td className="px-6 py-4 font-medium text-foreground">
                           {item.name}
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                            {item.class_name || "—"}
+                          </span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex justify-center gap-2">
