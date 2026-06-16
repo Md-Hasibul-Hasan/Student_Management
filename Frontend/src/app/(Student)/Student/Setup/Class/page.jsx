@@ -163,14 +163,11 @@ export default function Page() {
             <DataTableToolbar
               search={search}
               setSearch={setSearch}
-              filterValue={filterName}
-              setFilterValue={setFilterName}
               ordering={ordering}
               setOrdering={setOrdering}
-              searchPlaceholder="Search sections..."
-              filterPlaceholder="Filter name..."
+              searchPlaceholder="Search classes..."
               count={count}
-              countLabel="Subjects"
+              countLabel="Classes"
             />
 
             {/* Table header (count) */}

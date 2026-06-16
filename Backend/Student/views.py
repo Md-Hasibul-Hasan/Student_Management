@@ -10,6 +10,13 @@ from .serializers import (
     ResultGradeSerializer, ExamNameSerializer, ResultMainSerializer,
     ResultDetailsSerializer
 )
+from .filters import (
+    ClassFilter, SectionFilter, SubjectFilter,
+    StudentInfoFilter, StudentWithAdmissionFilter,
+    AdmissionFilter, StudentSubjectFilter,
+    ResultGradeFilter, ExamNameFilter, ResultMainFilter,
+    ResultDetailsFilter
+)
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -22,9 +29,9 @@ from drf_spectacular.utils import extend_schema
 class ClassViewSet(ModelViewSet):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
+    filterset_class = ClassFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name',]
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -35,9 +42,9 @@ class ClassViewSet(ModelViewSet):
 class SectionViewSet(ModelViewSet):
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
+    filterset_class = SectionFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name', 'school_class']
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -48,9 +55,9 @@ class SectionViewSet(ModelViewSet):
 class SubjectViewSet(ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
+    filterset_class = SubjectFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name', 'school_class']
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -61,9 +68,9 @@ class SubjectViewSet(ModelViewSet):
 class StudentInfoViewSet(ModelViewSet):
     queryset = StudentInfo.objects.all()
     serializer_class = StudentInfoSerializer
+    filterset_class = StudentInfoFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name', 'gender', 'status']
     search_fields = ['name', 'mobile', 'email', 'father', 'mother']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -75,9 +82,9 @@ class StudentWithAdmissionViewSet(ModelViewSet):
         'admissions__school_class', 'admissions__section', 'student_subjects__subject'
     ).all()
     serializer_class = StudentWithAdmissionSerializer
+    filterset_class = StudentWithAdmissionFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['name', 'gender', 'status']
     search_fields = ['name', 'mobile', 'email', 'father', 'mother']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']
@@ -88,9 +95,9 @@ class StudentWithAdmissionViewSet(ModelViewSet):
 class AdmissionViewSet(ModelViewSet):
     queryset = Admission.objects.all()
     serializer_class = AdmissionSerializer
+    filterset_class = AdmissionFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status', 'school_class', 'section']
     search_fields = ['student__name']
     ordering_fields = ['admission_date', 'added_on']
     ordering = ['-added_on']
@@ -101,9 +108,9 @@ class AdmissionViewSet(ModelViewSet):
 class StudentSubjectViewSet(ModelViewSet):
     queryset = StudentSubject.objects.all()
     serializer_class = StudentSubjectSerializer
+    filterset_class = StudentSubjectFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status', 'school_class', 'subject', 'student']
     search_fields = ['student__name', 'subject__name']
     ordering_fields = ['student', 'subject']
     pagination_class = MyPageNumberPagination
@@ -113,9 +120,9 @@ class StudentSubjectViewSet(ModelViewSet):
 class ResultGradeViewSet(ModelViewSet):
     queryset = ResultGrade.objects.all()
     serializer_class = ResultGradeSerializer
+    filterset_class = ResultGradeFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status']
     search_fields = ['grade_name']
     ordering_fields = ['grade_num', 'grade_name']
     ordering = ['grade_num']
@@ -126,9 +133,9 @@ class ResultGradeViewSet(ModelViewSet):
 class ExamNameViewSet(ModelViewSet):
     queryset = ExamName.objects.all()
     serializer_class = ExamNameSerializer
+    filterset_class = ExamNameFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status']
     search_fields = ['name']
     ordering_fields = ['name']
     pagination_class = MyPageNumberPagination
@@ -138,9 +145,9 @@ class ExamNameViewSet(ModelViewSet):
 class ResultMainViewSet(ModelViewSet):
     queryset = ResultMain.objects.all()
     serializer_class = ResultMainSerializer
+    filterset_class = ResultMainFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status', 'school_class', 'section', 'exam']
     search_fields = ['student__name']
     ordering_fields = ['exam_date', 'total_number']
     ordering = ['-exam_date']
@@ -151,9 +158,9 @@ class ResultMainViewSet(ModelViewSet):
 class ResultDetailsViewSet(ModelViewSet):
     queryset = ResultDetails.objects.all()
     serializer_class = ResultDetailsSerializer
+    filterset_class = ResultDetailsFilter
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status', 'school_class', 'section', 'exam', 'subject']
     search_fields = ['student__name', 'subject__name']
     ordering_fields = ['subject_number']
     pagination_class = MyPageNumberPagination

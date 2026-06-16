@@ -4,17 +4,22 @@ const url = process.env.NEXT_PUBLIC_API_URL;
 
 /* ──────────────── Classes ──────────────── */
 
+const buildParams = (queryParams = {}) => {
+  const params = new URLSearchParams();
+  // Generic filter fields: pass any key-value pair as a query param
+  Object.entries(queryParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.set(key, String(value));
+    }
+  });
+  return params;
+};
+
 export const fetchClasses = createAsyncThunk(
   "student/fetchClasses",
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const params = new URLSearchParams();
-      if (queryParams.search) params.set("search", queryParams.search);
-      if (queryParams.name) params.set("name", queryParams.name);
-      if (queryParams.ordering) params.set("ordering", queryParams.ordering);
-      if (queryParams.page) params.set("page", String(queryParams.page));
-      if (queryParams.records) params.set("records", String(queryParams.records));
-
+      const params = buildParams(queryParams);
       const queryString = params.toString();
       const response = await fetch(
         `${url}/api/students/classes/${queryString ? `?${queryString}` : ""}`
@@ -78,13 +83,7 @@ export const fetchSections = createAsyncThunk(
   "student/fetchSections",
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const params = new URLSearchParams();
-      if (queryParams.search) params.set("search", queryParams.search);
-      if (queryParams.name) params.set("name", queryParams.name);
-      if (queryParams.ordering) params.set("ordering", queryParams.ordering);
-      if (queryParams.page) params.set("page", String(queryParams.page));
-      if (queryParams.records) params.set("records", String(queryParams.records));
-
+      const params = buildParams(queryParams);
       const queryString = params.toString();
       const response = await fetch(
         `${url}/api/students/sections/${queryString ? `?${queryString}` : ""}`
@@ -148,14 +147,7 @@ export const fetchSubjects = createAsyncThunk(
   "student/fetchSubjects",
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const params = new URLSearchParams();
-      if (queryParams.search) params.set("search", queryParams.search);
-      if (queryParams.name) params.set("name", queryParams.name);
-      if (queryParams.ordering) params.set("ordering", queryParams.ordering);
-      if (queryParams.page) params.set("page", String(queryParams.page));
-      if (queryParams.records) params.set("records", String(queryParams.records));
-
-
+      const params = buildParams(queryParams);
       const queryString = params.toString();
       const response = await fetch(
         `${url}/api/students/subjects/${queryString ? `?${queryString}` : ""}`
@@ -235,13 +227,7 @@ export const fetchStudentInfoList = createAsyncThunk(
   "student/fetchStudentInfoList",
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const params = new URLSearchParams();
-      if (queryParams.search) params.set("search", queryParams.search);
-      if (queryParams.name) params.set("name", queryParams.name);
-      if (queryParams.ordering) params.set("ordering", queryParams.ordering);
-      if (queryParams.page) params.set("page", String(queryParams.page));
-      if (queryParams.records) params.set("records", String(queryParams.records));
-
+      const params = buildParams(queryParams);
       const queryString = params.toString();
       const response = await fetch(
         `${url}/api/students/student-info/${queryString ? `?${queryString}` : ""}`
@@ -341,13 +327,7 @@ export const fetchStudentsCombined = createAsyncThunk(
   "student/fetchStudentsCombined",
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const params = new URLSearchParams();
-      if (queryParams.search) params.set("search", queryParams.search);
-      if (queryParams.name) params.set("name", queryParams.name);
-      if (queryParams.ordering) params.set("ordering", queryParams.ordering);
-      if (queryParams.page) params.set("page", String(queryParams.page));
-      if (queryParams.records) params.set("records", String(queryParams.records));
-
+      const params = buildParams(queryParams);
       const queryString = params.toString();
       const response = await fetch(
         `${url}/api/students/students-combined/${queryString ? `?${queryString}` : ""}`

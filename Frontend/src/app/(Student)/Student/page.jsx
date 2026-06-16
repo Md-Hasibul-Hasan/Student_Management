@@ -287,7 +287,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link
-            href="/Student/Setup/Admission"
+            href="/Student/Admission"
             className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-200 hover:bg-amber-500/10 transition group"
           >
             <div className="p-2 rounded-lg bg-amber-500/20 text-amber-600">

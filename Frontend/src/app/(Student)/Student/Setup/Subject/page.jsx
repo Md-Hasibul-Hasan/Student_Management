@@ -28,10 +28,12 @@ export default function Page() {
 
   /* ──────────────── Search / Filter / Ordering / Pagination ──── */
   const [search, setSearch] = useState("");
-  const [filterName, setFilterName] = useState("");
   const [ordering, setOrdering] = useState("-created_at");
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState(5);
+
+  /* ──── Dropdown filters ──── */
+  const [filterClass, setFilterClass] = useState("");
 
   /* ──────────────── Load classes ────────────── */
   useEffect(() => {
@@ -40,10 +42,10 @@ export default function Page() {
 
   /* ──────────────── Fetch via Redux ────────────── */
   const loadSubjects = useCallback(() => {
-    dispatch(
-      fetchSubjects({ search, name: filterName, ordering, page, records })
-    );
-  }, [dispatch, search, filterName, ordering, page, records]);
+    const params = { search, ordering, page, records };
+    if (filterClass) params.school_class = filterClass;
+    dispatch(fetchSubjects(params));
+  }, [dispatch, search, filterClass, ordering, page, records]);
 
   useEffect(() => {
     loadSubjects();
@@ -52,7 +54,7 @@ export default function Page() {
   /* Reset to page 1 when any filter/search/ordering changes */
   useEffect(() => {
     setPage(1);
-  }, [search, filterName, ordering, records]);
+  }, [search, filterClass, ordering, records]);
 
   /* ──────────────── CRUD ────────────────────────── */
   const handleSubmit = async (e) => {
@@ -106,6 +108,22 @@ export default function Page() {
     setSubjectName("");
     setSelectedClass("");
   };
+
+  /* ──── Filter options ──── */
+  const classFilterOptions = classes.map((cls) => ({
+    value: String(cls.id),
+    label: cls.name,
+  }));
+
+  const filters = [
+    {
+      key: "school_class",
+      label: "All Classes",
+      options: classFilterOptions,
+      value: filterClass,
+      setValue: setFilterClass,
+    },
+  ];
 
   /* ──────────────── Reusable input classes ───────── */
   const inputClass =
@@ -195,16 +213,13 @@ export default function Page() {
         <div className="lg:col-span-8">
           <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
             {/* ── Toolbar: search / filter / ordering ── */}
-
             <DataTableToolbar
               search={search}
               setSearch={setSearch}
-              filterValue={filterName}
-              setFilterValue={setFilterName}
+              filters={filters}
               ordering={ordering}
               setOrdering={setOrdering}
               searchPlaceholder="Search subjects..."
-              filterPlaceholder="Filter name..."
               count={count}
               countLabel="Subjects"
             />
@@ -227,7 +242,7 @@ export default function Page() {
                   No Subjects Found
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {search || filterName
+                  {search || filterClass
                     ? "Try adjusting your search or filters."
                     : "Create your first subject from the left panel."}
                 </p>
@@ -300,7 +315,6 @@ export default function Page() {
               setPage={setPage}
               maxRecords={10}
             />
-
           </div>
         </div>
       </div>

@@ -41,6 +41,9 @@ export default function StudentsPage() {
   /* ──────────── Search / Filter / Ordering / Pagination ──── */
   const [search, setSearch] = useState("");
   const [filterName, setFilterName] = useState("");
+  const [filterClass, setFilterClass] = useState("");
+  const [filterGender, setFilterGender] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const [ordering, setOrdering] = useState("-created_at");
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState(10);
@@ -52,17 +55,19 @@ export default function StudentsPage() {
 
   /* ──────────── Load libraries ──────────── */
   useEffect(() => {
-    dispatch(fetchClasses());
+    dispatch(fetchClasses({ records: 9999 }));
     dispatch(fetchSections());
     dispatch(fetchSubjects());
   }, [dispatch]);
 
   /* ──────────── Fetch ──────────── */
   const loadStudents = useCallback(() => {
-    dispatch(
-      fetchStudentsCombined({ search, name: filterName, ordering, page, records })
-    );
-  }, [dispatch, search, filterName, ordering, page, records]);
+    const params = { search, ordering, page, records };
+    if (filterClass) params.school_class = filterClass;
+    if (filterGender) params.gender = filterGender;
+    if (filterStatus) params.status = filterStatus;
+    dispatch(fetchStudentsCombined(params));
+  }, [dispatch, search, filterClass, filterGender, filterStatus, ordering, page, records]);
 
   useEffect(() => {
     loadStudents();
@@ -70,8 +75,15 @@ export default function StudentsPage() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setPage(1);
-  }, [search, filterName, ordering, records]);
+  }, [search, filterClass, filterGender, filterStatus, ordering, records]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+
+  /* ──── Filter options ──── */
+  const classFilterOptions = classes.map((cls) => ({
+    value: String(cls.id),
+    label: cls.name,
+  }));
 
 
 
@@ -166,12 +178,41 @@ export default function StudentsPage() {
         <DataTableToolbar
           search={search}
           setSearch={setSearch}
-          filterValue={filterName}
-          setFilterValue={setFilterName}
+          filters={[
+
+            {
+              key: "school_class",
+              label: "All Classes",
+              options: classFilterOptions,
+              value: filterClass,
+              setValue: setFilterClass,
+            },
+            {
+              key: "gender",
+              label: "All Genders",
+              options: [
+                { value: "Male", label: "Male" },
+                { value: "Female", label: "Female" },
+                { value: "Other", label: "Other" },
+              ],
+              value: filterGender,
+              setValue: setFilterGender,
+            },
+
+            {
+              key: "status",
+              label: "All Statuses",
+              options: [
+                { value: "A", label: "Active" },
+                { value: "I", label: "Inactive" },
+              ],
+              value: filterStatus,
+              setValue: setFilterStatus,
+            },
+          ]}
           ordering={ordering}
           setOrdering={setOrdering}
           searchPlaceholder="Search students..."
-          filterPlaceholder="Filter name..."
           count={count}
           countLabel="Students"
         />
