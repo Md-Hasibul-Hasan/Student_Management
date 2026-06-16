@@ -88,13 +88,13 @@ class Admission(models.Model):
 
     school_class = models.ForeignKey(
         Class,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="admissions"
     )
 
     section = models.ForeignKey(
         Section,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="admissions"
     )
 
@@ -187,19 +187,19 @@ class ResultMain(models.Model):
 
     school_class = models.ForeignKey(
         Class,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="results"
     )
 
     section = models.ForeignKey(
         Section,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="results"
     )
 
     exam = models.ForeignKey(
         ExamName,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="results"
     )
 
@@ -207,7 +207,7 @@ class ResultMain(models.Model):
 
     grade = models.ForeignKey(
         ResultGrade,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="results"
     )
 
@@ -237,25 +237,25 @@ class ResultDetails(models.Model):
 
     school_class = models.ForeignKey(
         Class,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="result_details"
     )
 
     section = models.ForeignKey(
         Section,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="result_details"
     )
 
     exam = models.ForeignKey(
         ExamName,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="result_details"
     )
 
     subject = models.ForeignKey(
         Subject,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="result_details"
     )
 
@@ -263,7 +263,7 @@ class ResultDetails(models.Model):
 
     grade = models.ForeignKey(
         ResultGrade,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="result_details"
     )
 
