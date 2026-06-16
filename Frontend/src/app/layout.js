@@ -1,8 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
-
+import StoreProvider from "./providers";
 
 export const metadata = {
   title: "Create Next App",
@@ -18,7 +17,7 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>
+        <StoreProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -27,8 +26,8 @@ export default function RootLayout({ children }) {
           >
             {children}
           </ThemeProvider>
+        </StoreProvider>
 
-        </TooltipProvider>
       </body>
     </html>
   );

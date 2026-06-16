@@ -261,7 +261,7 @@ else:
     }
 
 print(f'Email Backend: {EMAIL_BACKEND}')
-# print(f'DB: {DATABASES}')
+print(f'DB: {DATABASES}')
 print(f'allowed hosts: {ALLOWED_HOSTS}')
 print(f'cookie domain: {CSRF_TRUSTED_ORIGINS}')
 

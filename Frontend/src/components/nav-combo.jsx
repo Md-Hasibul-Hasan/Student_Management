@@ -112,7 +112,7 @@ import {
 import { ChevronRightIcon } from "lucide-react"
 import { Button } from "./ui/button";
 
-export function NavCombo({ data }) {
+export function NavCombo({ data, title}) {
   const pathname = usePathname();
   const { state, toggleSidebar } = useSidebar();
   const [openItems, setOpenItems] = useState({});
@@ -146,7 +146,7 @@ export function NavCombo({ data }) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Manage Students</SidebarGroupLabel>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
       
       <SidebarMenu>
         {data.map((item) => {

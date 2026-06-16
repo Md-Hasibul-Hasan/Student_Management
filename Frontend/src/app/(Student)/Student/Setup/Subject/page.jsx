@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchClasses,
-  createClass,
-  updateClass,
-  deleteClass,
+  fetchSubjects,
+  createSubject,
+  updateSubject,
+  deleteSubject,
 } from "@/features/student/StudentThunk";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import DataTableToolbar from "@/components/table/DataTableToolbar";
@@ -14,12 +14,12 @@ import DataTablePagination from "@/components/table/DataTablePagination";
 
 export default function Page() {
   const dispatch = useDispatch();
-  const { data: classes, count, totalPages, loading } = useSelector(
-    (state) => state.student.classes
+  const { data: subjects, count, totalPages, loading } = useSelector(
+    (state) => state.student.subjects
   );
 
   /* CRUD form */
-  const [className, setClassName] = useState("");
+  const [subjectName, setSubjectName] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -31,36 +31,38 @@ export default function Page() {
   const [records, setRecords] = useState(5);
 
   /* ──────────────── Fetch via Redux ────────────── */
-  const loadClasses = useCallback(() => {
+  const loadSubjects = useCallback(() => {
     dispatch(
-      fetchClasses({ search, name: filterName, ordering, page, records })
+      fetchSubjects({ search, name: filterName, ordering, page, records })
     );
   }, [dispatch, search, filterName, ordering, page, records]);
 
   useEffect(() => {
-    loadClasses();
-  }, [loadClasses]);
+    loadSubjects();
+  }, [loadSubjects]);
 
   /* Reset to page 1 when any filter/search/ordering changes */
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setPage(1);
   }, [search, filterName, ordering, records]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   /* ──────────────── CRUD ────────────────────────── */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!className.trim()) return;
+    if (!subjectName.trim()) return;
 
     setSaving(true);
     try {
       if (editingId) {
-        await dispatch(updateClass({ id: editingId, name: className })).unwrap();
+        await dispatch(updateSubject({ id: editingId, name: subjectName })).unwrap();
       } else {
-        await dispatch(createClass({ name: className })).unwrap();
+        await dispatch(createSubject({ name: subjectName })).unwrap();
       }
-      setClassName("");
+      setSubjectName("");
       setEditingId(null);
-      loadClasses();
+      loadSubjects();
     } catch (error) {
       console.error(error);
     } finally {
@@ -70,15 +72,15 @@ export default function Page() {
 
   const handleEdit = (item) => {
     setEditingId(item.id);
-    setClassName(item.name);
+    setSubjectName(item.name);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this?")) return;
     try {
-      await dispatch(deleteClass(id)).unwrap();
-      loadClasses();
+      await dispatch(deleteSubject(id)).unwrap();
+      loadSubjects();
     } catch (error) {
       console.error(error);
     }
@@ -86,7 +88,7 @@ export default function Page() {
 
   const handleCancel = () => {
     setEditingId(null);
-    setClassName("");
+    setSubjectName("");
   };
 
   /* ──────────────── Reusable input classes ───────── */
@@ -101,10 +103,10 @@ export default function Page() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground">
-          Class Management
+          Subject Management
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Create, update and manage classes.
+          Create, update and manage subjects.
         </p>
       </div>
 
@@ -114,23 +116,23 @@ export default function Page() {
           <div className="bg-card border border-border rounded-2xl shadow-sm p-6">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-foreground">
-                {editingId ? "Update Class" : "Add Class"}
+                {editingId ? "Update Subject" : "Add Subject"}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {editingId ? "Modify selected class." : "Create a new class."}
+                {editingId ? "Modify selected subject." : "Create a new subject."}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-foreground">
-                  Class Name
+                  Subject Name
                 </label>
                 <input
                   type="text"
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
-                  placeholder="Enter class name"
+                  value={subjectName}
+                  onChange={(e) => setSubjectName(e.target.value)}
+                  placeholder="Enter subject name"
                   className={inputClass}
                 />
               </div>
@@ -140,7 +142,7 @@ export default function Page() {
                 disabled={saving}
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition disabled:opacity-50"
               >
-                {saving ? "Saving..." : editingId ? "Update Class" : "Add Class"}
+                {saving ? "Saving..." : editingId ? "Update Subject" : "Add Subject"}
               </button>
 
               {editingId && (
@@ -160,6 +162,7 @@ export default function Page() {
         <div className="lg:col-span-8">
           <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
             {/* ── Toolbar: search / filter / ordering ── */}
+
             <DataTableToolbar
               search={search}
               setSearch={setSearch}
@@ -173,30 +176,32 @@ export default function Page() {
               countLabel="Subjects"
             />
 
-            {/* Table header (count) */}
+
+
+            {/* Table header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">
-                Class List
+                Subject List
               </h2>
               {/* <span className="text-sm text-muted-foreground">
-                {count} Class{count !== 1 ? "es" : ""}
+                {count} Subject{count !== 1 ? "s" : ""}
               </span> */}
             </div>
 
             {/* ── Table body ── */}
             {loading ? (
               <div className="p-10 text-center text-muted-foreground">
-                Loading classes...
+                Loading subjects...
               </div>
-            ) : classes.length === 0 ? (
+            ) : subjects.length === 0 ? (
               <div className="p-10 text-center">
                 <h3 className="font-medium text-foreground">
-                  No Classes Found
+                  No Subjects Found
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {search || filterName
                     ? "Try adjusting your search or filters."
-                    : "Create your first class from the left panel."}
+                    : "Create your first subject from the left panel."}
                 </p>
               </div>
             ) : (
@@ -208,7 +213,7 @@ export default function Page() {
                         ID
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-semibold text-muted-foreground">
-                        Class Name
+                        Subject Name
                       </th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-muted-foreground">
                         Actions
@@ -216,7 +221,7 @@ export default function Page() {
                     </tr>
                   </thead>
                   <tbody>
-                    {classes.map((item) => (
+                    {subjects.map((item) => (
                       <tr
                         key={item.id}
                         className="border-t border-border hover:bg-accent/50 transition"
@@ -259,6 +264,7 @@ export default function Page() {
               setPage={setPage}
               maxRecords={10}
             />
+
           </div>
         </div>
       </div>

@@ -19,8 +19,8 @@ import { DashboardSwitcher } from "./dashboard-switcher"
 export function AppSidebar({
   logo,
   teams,
+  sidebar_section,
   combo,
-  single,
   user,
   ...props
 }) {
@@ -28,15 +28,14 @@ export function AppSidebar({
     <Sidebar collapsible="icon" {...props}>
 
       <SidebarHeader>
-        {/* <TeamSwitcher teams={teams} /> */}
         <Logo data={logo} />
         {/* <DashboardSwitcher teams={teams} /> */}
       </SidebarHeader>
 
       <SidebarContent>
-        <NavCombo data={combo} />
-        <NavCombo data={combo} />
-        {/* <NavSingle data={single} /> */}
+        {sidebar_section.map((item) => (
+          <NavCombo key={item.section_title} data={item.section_items} title={item.section_title} />
+        ))}
       </SidebarContent>
 
       <SidebarFooter>

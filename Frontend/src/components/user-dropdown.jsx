@@ -34,12 +34,13 @@ export default function UserDropdown() {
         <DropdownMenu>
 
             <DropdownMenuTrigger asChild>
-                <button className="outline-none flex items-center gap-2">
+                <button className="outline-none flex items-center gap-2 pr-2">
                     <Avatar className="h-8 w-8 rounded-lg cursor-pointer">
                         <AvatarImage src="/pp.jpg" />
                         <AvatarFallback>MH</AvatarFallback>
                     </Avatar>
-                    <MoreVertical className="h-4 w-4 cursor-pointer" />
+                    {/* <MoreVertical className="h-4 w-4 cursor-pointer" /> */}
+                    {/* <ChevronDown className="h-4 w-4 cursor-pointer " /> */}
 
                 </button>
             </DropdownMenuTrigger>

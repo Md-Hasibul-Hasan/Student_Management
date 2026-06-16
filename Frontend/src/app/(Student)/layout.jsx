@@ -2,13 +2,13 @@
 
 import AppHeader from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SettingsIcon,  GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon,  BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon , LayoutDashboardIcon,Plus} from "lucide-react"
-
+import { SettingsIcon, BookOpenIcon, GalleryVerticalEndIcon, AudioLinesIcon, FrameIcon, LayoutDashboardIcon, Plus, User } from "lucide-react"
 
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 
 // This is sample data.
@@ -30,7 +30,7 @@ const data = {
         <GalleryVerticalEndIcon />
       ),
       plan: "Dashboard",
-      url : "/dashboard"
+      url: "/dashboard"
     },
     {
       name: "User",
@@ -38,61 +38,87 @@ const data = {
         <AudioLinesIcon />
       ),
       plan: "Dashboard",
-      url : "/user_dashboard"
+      url: "/user_dashboard"
     },
   ],
-  Single: [
-    
-  ],
 
-  Combo :[
+  sidebar_section: [
     {
-      title: "Dashboard",
-      url: "/Student",
-      icon: <LayoutDashboardIcon />,
-    },
-
-    {
-      title: "SetUp",
-      icon: <FrameIcon />,
-      isActive: true,
-      items: [
+      section_title: "Management",
+      section_items: [
         {
-          title: "Class",
-          url: "/Student/Setup/Class",
-          icon: <Plus/>
+          title: "Dashboard",
+          url: "/Student",
+          icon: <LayoutDashboardIcon />,
         },
+
         {
-          title: "Section",
-          url: "/Student/Setup/Section",
-          icon: <Plus/>
+          title: "Setup",
+          icon: <FrameIcon />,
+          isActive: true,
+          items: [
+            {
+              title: "Class",
+              url: "/Student/Setup/Class",
+              icon: <Plus />
+            },
+            {
+              title: "Section",
+              url: "/Student/Setup/Section",
+              icon: <Plus />
+            },
+            {
+              title: "Subject",
+              url: "/Student/Setup/Subject",
+              icon: <Plus />
+            },
+          ],
         },
-      ],
-    },
 
+        {
+          title: "Admission",
+          icon: <BookOpenIcon />,
+          isActive: true,
+          items: [
+            {
+              title: "Admitted Students",
+              url: "/Student/Admission/Students",
+              icon: <Plus />
+            },
+            {
+              title: "New Admission",
+              url: "/Student/Admission",
+              icon: <Plus />
+            },
+          ],
+        },
 
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: <SettingsIcon />,
+        {
+          title: "Admin Panel",
+          url: `${process.env.NEXT_PUBLIC_API_URL}/admin`,
+          icon: <User />,
+        },
+      ]
     },
   ]
-
 }
 
 
 export default function DashboardLayout({ children }) {
   return (
-    <SidebarProvider>
-      <AppSidebar logo={data.logo} teams={data.teams} combo={data.Combo} single={data.Single} user={data.user} />
+    <TooltipProvider>
+      <SidebarProvider>
+        <AppSidebar logo={data.logo} teams={data.teams} sidebar_section={data.sidebar_section} user={data.user} />
 
-      <SidebarInset>
-        <AppHeader />
+        <SidebarInset>
+          <AppHeader />
 
-        <main className="p-6">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+          <main className="p-6">
+            {children}
+          </main>
+
+        </SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }

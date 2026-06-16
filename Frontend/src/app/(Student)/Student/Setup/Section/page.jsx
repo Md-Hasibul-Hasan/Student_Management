@@ -1,20 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchSections,
+  createSection,
+  updateSection,
+  deleteSection,
+} from "@/features/student/StudentThunk";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import DataTableToolbar from "@/components/table/DataTableToolbar";
+import DataTablePagination from "@/components/table/DataTablePagination";
 
 export default function Page() {
-  const API = process.env.NEXT_PUBLIC_API_URL;
-
-  /* ──────────────── Data & UI state ──────────────── */
-  const [sections, setSections] = useState([]);
-  const [count, setCount] = useState(0);
+  const dispatch = useDispatch();
+  const { data: sections, count, totalPages, loading } = useSelector(
+    (state) => state.student.sections
+  );
 
   /* CRUD form */
   const [sectionName, setSectionName] = useState("");
   const [editingId, setEditingId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   /* ──────────────── Search / Filter / Ordering / Pagination ──── */
   const [search, setSearch] = useState("");
@@ -22,50 +29,17 @@ export default function Page() {
   const [ordering, setOrdering] = useState("-created_at");
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState(5);
-  const [totalPages, setTotalPages] = useState(1);
 
-  /* ──────────────── Build query string ────────────── */
-  const buildUrl = useCallback(
-    (overridePage) => {
-      const params = new URLSearchParams();
-      if (search.trim()) params.set("search", search.trim());
-      if (filterName.trim()) params.set("name", filterName.trim());
-      params.set("ordering", ordering);
-      params.set("page", String(overridePage ?? page));
-      params.set("records", String(records));
-      return `${API}/api/students/sections/?${params.toString()}`;
-    },
-    [API, search, filterName, ordering, page, records],
-  );
-
-  /* ──────────────── Fetch sections ─────────────────── */
-  const fetchSections = useCallback(
-    async (url) => {
-      try {
-        setFetching(true);
-        const res = await fetch(url || buildUrl());
-        const data = await res.json();
-
-        // The DRF pagination returns { count, next, previous, results }
-        setSections(data.results ?? data);
-        setCount(data.count ?? data.length ?? 0);
-        setTotalPages(
-          data.count
-            ? Math.ceil(data.count / (Number(records) || 5))
-            : 1,
-        );
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setFetching(false);
-      }
-    },
-    [buildUrl, records],
-  );
+  /* ──────────────── Fetch via Redux ────────────── */
+  const loadSections = useCallback(() => {
+    dispatch(
+      fetchSections({ search, name: filterName, ordering, page, records })
+    );
+  }, [dispatch, search, filterName, ordering, page, records]);
 
   useEffect(() => {
-    fetchSections();
-  }, [fetchSections]);
+    loadSections();
+  }, [loadSections]);
 
   /* Reset to page 1 when any filter/search/ordering changes */
   useEffect(() => {
@@ -77,30 +51,20 @@ export default function Page() {
     e.preventDefault();
     if (!sectionName.trim()) return;
 
+    setSaving(true);
     try {
-      setLoading(true);
-
       if (editingId) {
-        await fetch(`${API}/api/students/sections/${editingId}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: sectionName }),
-        });
+        await dispatch(updateSection({ id: editingId, name: sectionName })).unwrap();
       } else {
-        await fetch(`${API}/api/students/sections/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: sectionName }),
-        });
+        await dispatch(createSection({ name: sectionName })).unwrap();
       }
-
       setSectionName("");
       setEditingId(null);
-      await fetchSections();
+      loadSections();
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -111,9 +75,10 @@ export default function Page() {
   };
 
   const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this?")) return;
     try {
-      await fetch(`${API}/api/students/sections/${id}/`, { method: "DELETE" });
-      await fetchSections();
+      await dispatch(deleteSection(id)).unwrap();
+      loadSections();
     } catch (error) {
       console.error(error);
     }
@@ -172,10 +137,10 @@ export default function Page() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={saving}
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition disabled:opacity-50"
               >
-                {loading ? "Saving..." : editingId ? "Update Section" : "Add Section"}
+                {saving ? "Saving..." : editingId ? "Update Section" : "Add Section"}
               </button>
 
               {editingId && (
@@ -195,62 +160,32 @@ export default function Page() {
         <div className="lg:col-span-8">
           <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
             {/* ── Toolbar: search / filter / ordering ── */}
-            <div className="flex flex-wrap items-center gap-3 p-4 border-b border-border">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[180px]">
-                <Search
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  type="text"
-                  placeholder="Search sections…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring"
-                />
-              </div>
 
-              {/* Filter by name */}
-              <div className="relative min-w-[140px]">
-                <SlidersHorizontal
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  type="text"
-                  placeholder="Filter name…"
-                  value={filterName}
-                  onChange={(e) => setFilterName(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring"
-                />
-              </div>
-
-              {/* Ordering */}
-              <select
-                value={ordering}
-                onChange={(e) => setOrdering(e.target.value)}
-                className={selectClass}
-              >
-                <option value="-created_at">Newest First</option>
-                <option value="created_at">Oldest First</option>
-                <option value="name">Name (A–Z)</option>
-                <option value="-name">Name (Z–A)</option>
-              </select>
-            </div>
+            <DataTableToolbar
+              search={search}
+              setSearch={setSearch}
+              filterValue={filterName}
+              setFilterValue={setFilterName}
+              ordering={ordering}
+              setOrdering={setOrdering}
+              searchPlaceholder="Search sections..."
+              filterPlaceholder="Filter name..."
+              count={count}
+              countLabel="Sections"
+            />
 
             {/* Table header (count) */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">
                 Section List
               </h2>
-              <span className="text-sm text-muted-foreground">
+              {/* <span className="text-sm text-muted-foreground">
                 {count} Section{count !== 1 ? "s" : ""}
-              </span>
+              </span> */}
             </div>
 
             {/* ── Table body ── */}
-            {fetching ? (
+            {loading ? (
               <div className="p-10 text-center text-muted-foreground">
                 Loading sections...
               </div>
@@ -317,65 +252,15 @@ export default function Page() {
             )}
 
             {/* ── Pagination ── */}
-            {totalPages && (
-              <div className="flex flex-col md:flex-row items-center justify-between px-6 py-4 border-t border-border">
-                <div className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
-                </div>
-                {/* Records per page */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm text-muted-foreground whitespace-nowrap">
-                    Per page
-                  </span>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={records}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      if (val >= 1 && val <= 10) setRecords(val);
-                    }}
-                    className="w-16 px-2 py-1.5 rounded-lg border border-border bg-background text-foreground text-sm text-center focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition"
-                  >
-                    <ChevronLeft size={14} />
-                    Previous
-                  </button>
+            <DataTablePagination
+              page={page}
+              totalPages={totalPages}
+              records={records}
+              setRecords={setRecords}
+              setPage={setPage}
+              maxRecords={10}
+            />
 
-                  {/* Page jump input */}
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-muted-foreground">Go to</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={totalPages}
-                      value={page}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        if (val >= 1 && val <= totalPages) setPage(val);
-                      }}
-                      className="w-16 px-2 py-1.5 rounded-lg border border-border bg-background text-foreground text-sm text-center focus:outline-none focus:ring-4 focus:ring-ring/20 focus:border-ring"
-                    />
-                  </div>
-
-                  <button
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition"
-                  >
-                    Next
-                    <ChevronRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
